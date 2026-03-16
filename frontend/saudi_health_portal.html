@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saudi Health Data Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green:#1a6b4a;--green2:#2d9b6f;--gold:#c8922a;
+    --cream:#f7f4ee;--ink:#1a1a18;--muted:#6b6b60;
+    --border:#dbd8d0;--radius:4px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);}
+  header{background:var(--green);color:white;padding:0 2.5rem;display:flex;align-items:center;justify-content:space-between;height:64px;position:sticky;top:0;z-index:100;border-bottom:3px solid var(--gold);}
+  .logo{font-family:'DM Serif Display',serif;font-size:1.25rem;}
+  .logo span{color:var(--gold);}
+  nav a{color:rgba(255,255,255,0.75);text-decoration:none;font-size:0.85rem;font-weight:500;margin-left:2rem;transition:color 0.2s;}
+  nav a:hover{color:white;}
+  .hero{background:var(--green);color:white;padding:5rem 2.5rem 4.5rem;position:relative;overflow:hidden;}
+  .hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:40px;background:var(--cream);clip-path:ellipse(55% 100% at 50% 100%);}
+  .hero-inner{max-width:860px;margin:0 auto;}
+  .hero-tag{display:inline-block;font-family:'DM Mono',monospace;font-size:0.72rem;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.8);padding:4px 12px;border-radius:20px;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:1.5rem;}
+  .hero h1{font-family:'DM Serif Display',serif;font-size:clamp(2.2rem,5vw,3.5rem);line-height:1.15;margin-bottom:1.25rem;}
+  .hero h1 em{font-style:italic;color:var(--gold);}
+  .hero p{font-size:1.05rem;color:rgba(255,255,255,0.75);max-width:520px;line-height:1.7;margin-bottom:2.5rem;}
+  .stats-row{display:flex;gap:2.5rem;flex-wrap:wrap;}
+  .stat-num{font-family:'DM Serif Display',serif;font-size:2rem;color:var(--gold);display:block;line-height:1;}
+  .stat-label{font-size:0.8rem;color:rgba(255,255,255,0.6);margin-top:4px;text-transform:uppercase;letter-spacing:0.06em;}
+  main{max-width:1100px;margin:0 auto;padding:3rem 2.5rem;}
+  .section-head{display:flex;align-items:baseline;gap:1rem;margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+  .section-head h2{font-family:'DM Serif Display',serif;font-size:1.4rem;font-weight:400;}
+  .section-head p{font-size:0.85rem;color:var(--muted);}
+  .filters{background:white;border:1px solid var(--border);border-radius:8px;padding:1.5rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:1rem;align-items:end;margin-bottom:2rem;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+  .field label{display:block;font-size:0.75rem;font-weight:500;text-transform:uppercase;letter-spacing:0.07em;color:var(--muted);margin-bottom:6px;}
+  .field select,.field input{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:0.9rem;color:var(--ink);background:var(--cream);transition:border-color 0.2s;}
+  .field select:focus,.field input:focus{outline:none;border-color:var(--green2);}
+  .btn{padding:10px 22px;border:none;border-radius:var(--radius);font-family:'DM Sans',sans-serif;font-size:0.9rem;font-weight:500;cursor:pointer;transition:all 0.15s;}
+  .btn-primary{background:var(--green);color:white;}
+  .btn-primary:hover{background:var(--green2);}
+  .btn-outline{background:transparent;color:var(--green);border:1px solid var(--green);margin-left:0.5rem;}
+  .btn-outline:hover{background:var(--green);color:white;}
+  .results-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;}
+  .results-count{font-size:0.85rem;color:var(--muted);}
+  .results-count strong{color:var(--ink);}
+  .table-wrap{background:white;border:1px solid var(--border);border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.05);}
+  table{width:100%;border-collapse:collapse;font-size:0.88rem;}
+  thead{background:var(--ink);color:white;}
+  thead th{padding:12px 16px;text-align:left;font-weight:500;font-size:0.78rem;letter-spacing:0.05em;text-transform:uppercase;}
+  tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
+  tbody tr:last-child{border-bottom:none;}
+  tbody tr:hover{background:#f9f7f2;}
+  tbody td{padding:11px 16px;}
+  .td-indicator{font-weight:500;}
+  .td-source{font-family:'DM Mono',monospace;font-size:0.78rem;color:white;background:var(--green2);padding:2px 8px;border-radius:20px;display:inline-block;}
+  .td-value{font-family:'DM Mono',monospace;font-size:0.9rem;font-weight:500;color:var(--green);}
+  .state-box{text-align:center;padding:4rem 2rem;color:var(--muted);}
+  .sources-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem;}
+  .source-card{background:white;border:1px solid var(--border);border-radius:8px;padding:1.25rem 1.5rem;border-left:4px solid var(--green2);box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+  .source-card h3{font-family:'DM Serif Display',serif;font-size:1rem;font-weight:400;margin-bottom:4px;}
+  .source-card p{font-size:0.8rem;color:var(--muted);line-height:1.5;}
+  .source-badge{display:inline-block;font-family:'DM Mono',monospace;font-size:0.7rem;padding:2px 8px;border-radius:20px;margin-top:8px;}
+  .badge-live{background:#e8f5ee;color:var(--green);}
+  .badge-csv{background:#fef6e6;color:var(--gold);}
+  footer{background:var(--ink);color:rgba(255,255,255,0.5);text-align:center;padding:2rem;font-size:0.8rem;margin-top:5rem;}
+  footer a{color:rgba(255,255,255,0.7);}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+  .loading{animation:pulse 1.2s ease infinite;}
+  @media(max-width:768px){.filters{grid-template-columns:1fr 1fr;}.filters .btn{grid-column:1/-1;}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">Saudi Health <span>Portal</span></div>
+  <nav>
+    <a href="#data">Data</a>
+    <a href="#sources">Sources</a>
+    <a href="http://127.0.0.1:8000/docs" target="_blank">API Docs</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-tag">Open Access · Public Health · Saudi Arabia</div>
+    <h1>Health data for<br><em>Saudi Arabia</em>, unified.</h1>
+    <p>One place to explore, filter, and download public health indicators from WHO, IHME, GASTAT and MOH — for researchers, analysts, and policymakers.</p>
+    <div class="stats-row">
+      <div class="stat"><span class="stat-num" id="stat-records">—</span><span class="stat-label">Records</span></div>
+      <div class="stat"><span class="stat-num" id="stat-indicators">—</span><span class="stat-label">Indicators</span></div>
+      <div class="stat"><span class="stat-num" id="stat-sources">—</span><span class="stat-label">Sources</span></div>
+    </div>
+  </div>
+</section>
+
+<main>
+  <section id="data">
+    <div class="section-head">
+      <h2>Explore the data</h2>
+      <p>Filter by indicator, year range, and sex — then download results as CSV.</p>
+    </div>
+    <div class="filters">
+      <div class="field">
+        <label>Indicator</label>
+        <select id="filter-indicator"><option value="">All indicators</option></select>
+      </div>
+      <div class="field">
+        <label>From year</label>
+        <input type="number" id="filter-year-from" placeholder="e.g. 2010" min="1990" max="2024">
+      </div>
+      <div class="field">
+        <label>To year</label>
+        <input type="number" id="filter-year-to" placeholder="e.g. 2022" min="1990" max="2024">
+      </div>
+      <div class="field">
+        <label>Sex</label>
+        <select id="filter-sex">
+          <option value="">All</option>
+          <option value="Both sexes">Both sexes</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+      </div>
+      <div style="display:flex;align-items:flex-end;">
+        <button class="btn btn-primary" onclick="loadData()">Search</button>
+        <button class="btn btn-outline" onclick="downloadCSV()">↓ CSV</button>
+      </div>
+    </div>
+    <div class="results-bar">
+      <span class="results-count" id="results-count">Use filters above to explore the data.</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Indicator</th><th>Year</th><th>Sex</th><th>Value</th><th>Source</th></tr></thead>
+        <tbody id="results-body">
+          <tr><td colspan="5"><div class="state-box"><p>Select filters and click <strong>Search</strong> to load data.</p></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="sources" style="margin-top:4rem;">
+    <div class="section-head">
+      <h2>Data sources</h2>
+      <p>All data is attributed to its original source and updated regularly.</p>
+    </div>
+    <div class="sources-grid">
+      <div class="source-card">
+        <h3>WHO — Global Health Observatory</h3>
+        <p>Life expectancy, mortality, obesity, air quality, and more for Saudi Arabia.</p>
+        <span class="source-badge badge-live">Live API</span>
+      </div>
+      <div class="source-card">
+        <h3>IHME — Global Burden of Disease</h3>
+        <p>Disease burden, DALYs, and risk factor data by cause and age group.</p>
+        <span class="source-badge badge-csv">Coming soon</span>
+      </div>
+      <div class="source-card">
+        <h3>GASTAT</h3>
+        <p>Saudi General Authority for Statistics — national health surveys and census data.</p>
+        <span class="source-badge badge-csv">CSV</span>
+      </div>
+      <div class="source-card">
+        <h3>MOH — Ministry of Health</h3>
+        <p>Hospital capacity, disease surveillance, and healthcare system indicators.</p>
+        <span class="source-badge badge-csv">CSV</span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  Saudi Health Data Portal · Open source · Data from WHO, IHME, GASTAT, MOH ·
+  <a href="http://127.0.0.1:8000/docs" target="_blank">API Docs</a>
+</footer>
+
+<script>
+  const API='http://127.0.0.1:8000';
+  let currentData=[];
+
+  async function loadStats(){
+    try{
+      const res=await fetch(`${API}/health`);
+      const d=await res.json();
+      document.getElementById('stat-records').textContent=d.total_records.toLocaleString();
+      document.getElementById('stat-indicators').textContent=d.indicators;
+      document.getElementById('stat-sources').textContent=Object.keys(d.by_source).length;
+    }catch(e){console.warn('Stats error:',e);}
+  }
+
+  async function loadIndicators(){
+    try{
+      const res=await fetch(`${API}/indicators`);
+      const d=await res.json();
+      const sel=document.getElementById('filter-indicator');
+      d.indicators.forEach(ind=>{
+        const opt=document.createElement('option');
+        opt.value=ind.code;opt.textContent=ind.name;sel.appendChild(opt);
+      });
+    }catch(e){console.warn('Indicators error:',e);}
+  }
+
+  async function loadData(){
+    const indicator=document.getElementById('filter-indicator').value;
+    const yearFrom=document.getElementById('filter-year-from').value;
+    const yearTo=document.getElementById('filter-year-to').value;
+    const sex=document.getElementById('filter-sex').value;
+    const params=new URLSearchParams();
+    if(indicator)params.set('indicator_code',indicator);
+    if(yearFrom)params.set('year_from',yearFrom);
+    if(yearTo)params.set('year_to',yearTo);
+    if(sex)params.set('sex',sex);
+    const tbody=document.getElementById('results-body');
+    tbody.innerHTML=`<tr><td colspan="5"><div class="state-box loading"><p>Loading data...</p></div></td></tr>`;
+    document.getElementById('results-count').textContent='Loading...';
+    try{
+      const res=await fetch(`${API}/data?${params}`);
+      if(res.status===404){
+        tbody.innerHTML=`<tr><td colspan="5"><div class="state-box"><p>No records found for the selected filters.</p></div></td></tr>`;
+        document.getElementById('results-count').textContent='0 records found.';
+        currentData=[];return;
+      }
+      const d=await res.json();
+      currentData=d.data;
+      tbody.innerHTML=currentData.map(r=>`
+        <tr>
+          <td class="td-indicator">${r.indicator_name}</td>
+          <td>${r.year}</td>
+          <td>${r.sex}</td>
+          <td class="td-value">${r.value}</td>
+          <td><span class="td-source">${r.source}</span></td>
+        </tr>`).join('');
+      document.getElementById('results-count').innerHTML=`Showing <strong>${d.count}</strong> records`;
+    }catch(e){
+      tbody.innerHTML=`<tr><td colspan="5"><div class="state-box"><p>Cannot connect to API. Is the server running on port 8000?</p></div></td></tr>`;
+    }
+  }
+
+  function downloadCSV(){
+    if(!currentData.length){alert('Search for data first.');return;}
+    const headers=['indicator_code','indicator_name','year','sex','value','country','source'];
+    const rows=currentData.map(r=>headers.map(h=>`"${r[h]??''}"`).join(','));
+    const csv=[headers.join(','),...rows].join('\n');
+    const blob=new Blob([csv],{type:'text/csv'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='saudi_health_data.csv';
+    a.click();
+  }
+
+  loadStats();
+  loadIndicators();
+</script>
+</body>
+</html>
